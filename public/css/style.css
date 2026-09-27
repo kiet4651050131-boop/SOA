@@ -1,0 +1,237 @@
+/* =========================
+   CÀI ĐẶT CHUNG
+========================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header {
+    background-color: #1f4e79;
+    color: white;
+    text-align: center;
+    padding: 25px;
+}
+
+header h1 {
+    margin-bottom: 8px;
+}
+
+header p {
+    font-size: 15px;
+}
+
+/* =========================
+   MENU
+========================= */
+
+nav {
+    background-color: #17365d;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+}
+
+nav button {
+    background: transparent;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 15px;
+    border-radius: 5px;
+}
+
+nav button:hover {
+    background-color: #2f75b5;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+main {
+    width: 95%;
+    max-width: 1400px;
+    margin: 25px auto;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+.section h2 {
+    margin-bottom: 20px;
+    color: #1f4e79;
+}
+
+/* =========================
+   TRANG CHỦ
+========================= */
+
+.welcome {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.welcome h3 {
+    margin-bottom: 15px;
+    color: #1f4e79;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.add-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.add-btn:hover {
+    background-color: #218838;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* =========================
+   TABLE
+========================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+th {
+    background-color: #1f4e79;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 11px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-container {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.form-container h3 {
+    margin-bottom: 15px;
+    color: #1f4e79;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-buttons {
+    margin-top: 15px;
+}
+
+.btn-save {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 5px;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+/* =========================
+   ACTION BUTTON
+========================= */
+
+.btn-edit {
+    background-color: #ffc107;
+    color: #212529;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    text-align: center;
+    background-color: #17365d;
+    color: white;
+    padding: 15px;
+    margin-top: 40px;
+}
