@@ -1,6 +1,6 @@
 const registrationService = require('../services/registration.service');
 
-// GET /api/registrations
+// GET /api/registrations.
 async function getAllRegistrations(req, res) {
     try {
         const registrations =
@@ -20,7 +20,7 @@ async function getAllRegistrations(req, res) {
     }
 }
 
-// GET /api/registrations/:id
+// GET /api/registrations/:id.
 async function getRegistrationById(req, res) {
     try {
         const { id } = req.params;

@@ -1,6 +1,6 @@
 const pool = require('../config/database');
 
-// Lấy tất cả đăng ký
+// Lấy tất cả đăng ký.
 async function getAllRegistrations() {
     const [rows] = await pool.query(`
         SELECT
@@ -22,7 +22,7 @@ async function getAllRegistrations() {
     return rows;
 }
 
-// Lấy đăng ký theo mã
+// Lấy đăng ký theo mã.
 async function getRegistrationById(maDK) {
     const [rows] = await pool.query(`
         SELECT
