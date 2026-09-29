@@ -1,16 +1,17 @@
-const pool = require('../config/database');
+﻿const pool = require('../config/database');
 
 // Lấy tất cả đăng ký.
 async function getAllRegistrations() {
     const [rows] = await pool.query(`
-        SELECT
+        SELECT 
             DANGKY.MaDK,
             DANGKY.MaSV,
             SINHVIEN.HoTen,
             DANGKY.MaDT,
             DETAI.TenDT,
             DANGKY.NgayDangKy,
-            DANGKY.TrangThai
+            DANGKY.TrangThai,
+            DANGKY.Diem
         FROM DANGKY
         INNER JOIN SINHVIEN
             ON DANGKY.MaSV = SINHVIEN.MaSV
@@ -25,14 +26,15 @@ async function getAllRegistrations() {
 // Lấy đăng ký theo mã.
 async function getRegistrationById(maDK) {
     const [rows] = await pool.query(`
-        SELECT
+        SELECT 
             DANGKY.MaDK,
             DANGKY.MaSV,
             SINHVIEN.HoTen,
             DANGKY.MaDT,
             DETAI.TenDT,
             DANGKY.NgayDangKy,
-            DANGKY.TrangThai
+            DANGKY.TrangThai,
+            DANGKY.Diem
         FROM DANGKY
         INNER JOIN SINHVIEN
             ON DANGKY.MaSV = SINHVIEN.MaSV
@@ -50,14 +52,15 @@ async function createRegistration(registration) {
         MaSV,
         MaDT,
         NgayDangKy,
-        TrangThai
+        TrangThai,
+        Diem
     } = registration;
 
     const [result] = await pool.query(
         `INSERT INTO DANGKY
-        (MaSV, MaDT, NgayDangKy, TrangThai)
-        VALUES (?, ?, ?, ?)`,
-        [MaSV, MaDT, NgayDangKy, TrangThai]
+        (MaSV, MaDT, NgayDangKy, TrangThai, Diem)
+        VALUES (?, ?, ?, ?, ?)`,
+        [MaSV, MaDT, NgayDangKy, TrangThai, Diem]
     );
 
     return result;
@@ -69,7 +72,8 @@ async function updateRegistration(maDK, registration) {
         MaSV,
         MaDT,
         NgayDangKy,
-        TrangThai
+        TrangThai,
+        Diem
     } = registration;
 
     const [result] = await pool.query(
@@ -77,9 +81,10 @@ async function updateRegistration(maDK, registration) {
          SET MaSV = ?,
              MaDT = ?,
              NgayDangKy = ?,
-             TrangThai = ?
+             TrangThai = ?,
+             Diem = ?
          WHERE MaDK = ?`,
-        [MaSV, MaDT, NgayDangKy, TrangThai, maDK]
+        [MaSV, MaDT, NgayDangKy, TrangThai, Diem, maDK]
     );
 
     return result;

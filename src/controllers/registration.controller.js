@@ -1,6 +1,6 @@
 const registrationService = require('../services/registration.service');
 
-// GET /api/registrations.
+// GET /api/registrations
 async function getAllRegistrations(req, res) {
     try {
         const registrations =
@@ -20,7 +20,8 @@ async function getAllRegistrations(req, res) {
     }
 }
 
-// GET /api/registrations/:id.
+
+// GET /api/registrations/:id
 async function getRegistrationById(req, res) {
     try {
         const { id } = req.params;
@@ -49,6 +50,7 @@ async function getRegistrationById(req, res) {
     }
 }
 
+
 // POST /api/registrations
 async function createRegistration(req, res) {
     try {
@@ -56,7 +58,8 @@ async function createRegistration(req, res) {
             MaSV,
             MaDT,
             NgayDangKy,
-            TrangThai
+            TrangThai,
+            Diem
         } = req.body;
 
         if (!MaSV || !MaDT) {
@@ -66,17 +69,32 @@ async function createRegistration(req, res) {
             });
         }
 
+        // Nếu có điểm thì kiểm tra khoảng 0 - 10
+        if (
+            Diem !== null &&
+            Diem !== undefined &&
+            Diem !== '' &&
+            (Number(Diem) < 0 || Number(Diem) > 10)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: 'Điểm phải nằm trong khoảng từ 0 đến 10'
+            });
+        }
+
         await registrationService.createRegistration({
             MaSV,
             MaDT,
             NgayDangKy,
-            TrangThai
+            TrangThai,
+            Diem: Diem === '' ? null : Diem
         });
 
         res.status(201).json({
             success: true,
             message: 'Thêm đăng ký thành công'
         });
+
     } catch (error) {
         console.error('createRegistration error:', error.message);
 
@@ -87,6 +105,7 @@ async function createRegistration(req, res) {
     }
 }
 
+
 // PUT /api/registrations/:id
 async function updateRegistration(req, res) {
     try {
@@ -96,7 +115,8 @@ async function updateRegistration(req, res) {
             MaSV,
             MaDT,
             NgayDangKy,
-            TrangThai
+            TrangThai,
+            Diem
         } = req.body;
 
         if (!MaSV || !MaDT) {
@@ -106,12 +126,26 @@ async function updateRegistration(req, res) {
             });
         }
 
+        // Nếu có điểm thì kiểm tra khoảng 0 - 10
+        if (
+            Diem !== null &&
+            Diem !== undefined &&
+            Diem !== '' &&
+            (Number(Diem) < 0 || Number(Diem) > 10)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: 'Điểm phải nằm trong khoảng từ 0 đến 10'
+            });
+        }
+
         const result =
             await registrationService.updateRegistration(id, {
                 MaSV,
                 MaDT,
                 NgayDangKy,
-                TrangThai
+                TrangThai,
+                Diem: Diem === '' ? null : Diem
             });
 
         if (result.affectedRows === 0) {
@@ -125,6 +159,7 @@ async function updateRegistration(req, res) {
             success: true,
             message: 'Cập nhật đăng ký thành công'
         });
+
     } catch (error) {
         console.error('updateRegistration error:', error.message);
 
@@ -134,6 +169,7 @@ async function updateRegistration(req, res) {
         });
     }
 }
+
 
 // DELETE /api/registrations/:id
 async function deleteRegistration(req, res) {
@@ -154,6 +190,7 @@ async function deleteRegistration(req, res) {
             success: true,
             message: 'Xóa đăng ký thành công'
         });
+
     } catch (error) {
         console.error('deleteRegistration error:', error.message);
 
@@ -163,6 +200,7 @@ async function deleteRegistration(req, res) {
         });
     }
 }
+
 
 module.exports = {
     getAllRegistrations,

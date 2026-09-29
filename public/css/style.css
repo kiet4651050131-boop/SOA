@@ -8,11 +8,22 @@
     padding: 0;
 }
 
+html,
+body {
+    min-height: 100%;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f6f9;
     color: #333;
+
+    /* Giúp footer nằm dưới cùng */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
+
 
 /* =========================
    HEADER
@@ -22,16 +33,21 @@ header {
     background-color: #1f4e79;
     color: white;
     text-align: center;
-    padding: 25px;
+    padding: 28px 20px;
+}
+
+.header-content {
+    width: 95%;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 header h1 {
-    margin-bottom: 8px;
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
 }
 
-header p {
-    font-size: 15px;
-}
 
 /* =========================
    MENU
@@ -39,34 +55,51 @@ header p {
 
 nav {
     background-color: #17365d;
+
     display: flex;
     justify-content: center;
-    gap: 10px;
-    padding: 12px;
+    align-items: center;
+
+    gap: 8px;
+    padding: 10px 15px;
 }
 
 nav button {
     background: transparent;
     color: white;
+
     border: none;
-    padding: 10px 20px;
+
+    padding: 11px 22px;
+
     cursor: pointer;
+
     font-size: 15px;
-    border-radius: 5px;
+
+    border-radius: 6px;
+
+    transition: background-color 0.2s ease,
+                transform 0.2s ease;
 }
 
 nav button:hover {
     background-color: #2f75b5;
+    transform: translateY(-1px);
 }
+
 
 /* =========================
    MAIN
 ========================= */
 
 main {
-    width: 95%;
+    width: 92%;
     max-width: 1400px;
-    margin: 25px auto;
+
+    margin: 30px auto;
+
+    /* Quan trọng để footer xuống đáy */
+    flex: 1;
 }
 
 .section {
@@ -77,26 +110,206 @@ main {
     display: block;
 }
 
-.section h2 {
+.section > h2 {
     margin-bottom: 20px;
     color: #1f4e79;
+    font-size: 24px;
 }
+
 
 /* =========================
-   TRANG CHỦ
+   TRANG CHỦ - BANNER
 ========================= */
 
-.welcome {
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+.home-banner {
+    background: linear-gradient(
+        135deg,
+        #1f4e79,
+        #2f75b5
+    );
+
+    color: white;
+
+    border-radius: 12px;
+
+    padding: 38px 45px;
+
+    margin-bottom: 32px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
-.welcome h3 {
-    margin-bottom: 15px;
-    color: #1f4e79;
+.banner-content {
+    max-width: 850px;
 }
+
+.banner-label {
+    display: inline-block;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    background-color: rgba(255, 255, 255, 0.15);
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    margin-bottom: 12px;
+}
+
+.home-banner h2 {
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+
+.home-banner p {
+    font-size: 16px;
+    line-height: 1.7;
+
+    color: #f2f6fa;
+}
+
+
+/* =========================
+   TRANG CHỦ - CHỨC NĂNG
+========================= */
+
+.home-section {
+    margin-bottom: 30px;
+}
+
+.home-title {
+    color: #1f4e79;
+    font-size: 23px;
+
+    margin-bottom: 18px;
+}
+
+.feature-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 22px;
+}
+
+.feature-card {
+    background-color: white;
+
+    padding: 28px 25px;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    border: 1px solid #e5e9ee;
+
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.feature-icon {
+    font-size: 42px;
+
+    margin-bottom: 15px;
+}
+
+.feature-card h3 {
+    color: #1f4e79;
+
+    font-size: 19px;
+
+    margin-bottom: 12px;
+}
+
+.feature-card p {
+    color: #666;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+
+    min-height: 68px;
+
+    margin-bottom: 20px;
+}
+
+.feature-btn {
+    background-color: #1f4e79;
+
+    color: white;
+
+    border: none;
+
+    padding: 9px 18px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition: background-color 0.2s ease;
+}
+
+.feature-btn:hover {
+    background-color: #2f75b5;
+}
+
+
+/* =========================
+   TRANG CHỦ - LƯU Ý
+========================= */
+
+.notice-box {
+    background-color: #eef4fa;
+
+    border-left: 5px solid #1f4e79;
+
+    border-radius: 8px;
+
+    padding: 20px 25px;
+
+    margin-bottom: 20px;
+}
+
+.notice-title {
+    color: #1f4e79;
+
+    font-weight: bold;
+
+    font-size: 17px;
+
+    margin-bottom: 12px;
+}
+
+.notice-box ul {
+    padding-left: 20px;
+}
+
+.notice-box li {
+    margin-bottom: 8px;
+
+    color: #555;
+
+    line-height: 1.5;
+}
+
+.notice-box li:last-child {
+    margin-bottom: 0;
+}
+
 
 /* =========================
    BUTTON
@@ -104,12 +317,22 @@ main {
 
 .add-btn {
     background-color: #28a745;
+
     color: white;
+
     border: none;
+
     padding: 10px 16px;
+
     border-radius: 5px;
+
     cursor: pointer;
+
     margin-bottom: 15px;
+
+    font-size: 14px;
+
+    transition: background-color 0.2s ease;
 }
 
 .add-btn:hover {
@@ -120,32 +343,53 @@ button {
     cursor: pointer;
 }
 
+
 /* =========================
    TABLE
 ========================= */
 
 table {
     width: 100%;
+
     border-collapse: collapse;
+
     background-color: white;
+
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    border-radius: 8px;
+
+    overflow: hidden;
 }
 
 th {
     background-color: #1f4e79;
+
     color: white;
-    padding: 12px;
+
+    padding: 13px;
+
     text-align: left;
+
+    font-size: 14px;
 }
 
 td {
     padding: 11px;
+
     border-bottom: 1px solid #ddd;
+
+    font-size: 14px;
 }
 
 tr:hover {
-    background-color: #f1f1f1;
+    background-color: #f1f5f8;
 }
+
+tr:last-child td {
+    border-bottom: none;
+}
+
 
 /* =========================
    FORM
@@ -153,14 +397,19 @@ tr:hover {
 
 .form-container {
     background-color: white;
+
     padding: 20px;
+
     margin-bottom: 20px;
+
     border-radius: 8px;
+
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .form-container h3 {
     margin-bottom: 15px;
+
     color: #1f4e79;
 }
 
@@ -170,16 +419,32 @@ tr:hover {
 
 .form-group label {
     display: block;
+
     margin-bottom: 5px;
+
     font-weight: bold;
 }
 
 .form-group input,
 .form-group select {
     width: 100%;
+
     padding: 9px;
+
     border: 1px solid #ccc;
+
     border-radius: 5px;
+
+    font-family: Arial, sans-serif;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+
+    border-color: #2f75b5;
+
+    box-shadow: 0 0 0 2px rgba(47, 117, 181, 0.12);
 }
 
 .form-buttons {
@@ -188,20 +453,30 @@ tr:hover {
 
 .btn-save {
     background-color: #007bff;
+
     color: white;
+
     border: none;
+
     padding: 9px 16px;
+
     border-radius: 5px;
 }
 
 .btn-cancel {
     background-color: #6c757d;
+
     color: white;
+
     border: none;
+
     padding: 9px 16px;
+
     border-radius: 5px;
+
     margin-left: 5px;
 }
+
 
 /* =========================
    ACTION BUTTON
@@ -209,20 +484,30 @@ tr:hover {
 
 .btn-edit {
     background-color: #ffc107;
+
     color: #212529;
+
     border: none;
+
     padding: 6px 10px;
+
     border-radius: 4px;
+
     margin-right: 5px;
 }
 
 .btn-delete {
     background-color: #dc3545;
+
     color: white;
+
     border: none;
+
     padding: 6px 10px;
+
     border-radius: 4px;
 }
+
 
 /* =========================
    FOOTER
@@ -230,8 +515,73 @@ tr:hover {
 
 footer {
     text-align: center;
+
     background-color: #17365d;
+
     color: white;
-    padding: 15px;
+
+    padding: 16px;
+
     margin-top: 40px;
+}
+
+footer p {
+    font-size: 14px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-card p {
+        min-height: auto;
+    }
+
+    .home-banner {
+        padding: 30px;
+    }
+
+    .home-banner h2 {
+        font-size: 25px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 20px;
+    }
+
+    nav {
+        flex-wrap: wrap;
+    }
+
+    nav button {
+        padding: 9px 14px;
+    }
+
+    main {
+        width: 94%;
+    }
+
+    .home-banner {
+        padding: 25px;
+    }
+
+    .home-banner h2 {
+        font-size: 22px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+    }
 }
