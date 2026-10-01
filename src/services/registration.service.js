@@ -46,7 +46,7 @@ async function getRegistrationById(maDK) {
     return rows[0];
 }
 
-// Thêm đăng ký
+// Thêm đăng ký.
 async function createRegistration(registration) {
     const {
         MaSV,

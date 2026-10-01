@@ -16,7 +16,7 @@ router.post('/', registrationController.createRegistration);
 // PUT /api/registrations/:id.
 router.put('/:id', registrationController.updateRegistration);
 
-// DELETE /api/registrations/:id.
+// DELETE /api/registrations/:id
 router.delete('/:id', registrationController.deleteRegistration);
 
 module.exports = router;
