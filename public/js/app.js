@@ -1,15 +1,156 @@
 const API_BASE = '/api';
 
 // =========================
+// ĐĂNG NHẬP / JWT
+// =========================
+
+function getToken() {
+    return localStorage.getItem('token');
+}
+
+function getUser() {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+}
+
+function updateAuthUI() {
+    const token = getToken();
+    const user = getUser();
+
+    const loginBox = document.getElementById('loginBox');
+    const userBox = document.getElementById('userBox');
+    const welcomeUser = document.getElementById('welcomeUser');
+
+    if (!loginBox || !userBox || !welcomeUser) return;
+
+    if (token && user) {
+        loginBox.style.display = 'none';
+        userBox.style.display = 'flex';
+        welcomeUser.textContent =
+            `Xin chào, ${user.HoTen || user.TenDangNhap}`;
+    } else {
+        loginBox.style.display = 'flex';
+        userBox.style.display = 'none';
+        welcomeUser.textContent = '';
+    }
+}
+
+async function login() {
+    const TenDangNhap =
+        document.getElementById('loginUsername').value.trim();
+
+    const MatKhau =
+        document.getElementById('loginPassword').value;
+
+    if (!TenDangNhap || !MatKhau) {
+        alert('Vui lòng nhập tên đăng nhập và mật khẩu!');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                TenDangNhap,
+                MatKhau
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.message || 'Đăng nhập thất bại!');
+            return;
+        }
+
+        localStorage.setItem('token', result.token);
+        localStorage.setItem(
+            'user',
+            JSON.stringify(result.user)
+        );
+
+        updateAuthUI();
+
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+
+        alert('Đăng nhập thành công!');
+    } catch (error) {
+        console.error(error);
+        alert('Không thể kết nối đến máy chủ!');
+    }
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    updateAuthUI();
+    showSection('home');
+
+    alert('Đã đăng xuất!');
+}
+
+async function authFetch(url, options = {}) {
+    const token = getToken();
+
+    if (!token) {
+        alert('Vui lòng đăng nhập trước!');
+        showSection('home');
+        return null;
+    }
+
+    options.headers = {
+        ...(options.headers || {}),
+        'Authorization': `Bearer ${token}`
+    };
+
+    const response = await fetch(url, options);
+
+    if (
+        response.status === 401 ||
+        response.status === 403
+    ) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
+        updateAuthUI();
+
+        alert(
+            'Phiên đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại!'
+        );
+
+        showSection('home');
+
+        return null;
+    }
+
+    return response;
+}
+
+document.addEventListener(
+    'DOMContentLoaded',
+    updateAuthUI
+);
+
+
+// =========================
 // CHUYỂN TRANG
 // =========================
 
 function showSection(sectionId) {
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.remove('active');
-    });
+    document
+        .querySelectorAll('.section')
+        .forEach(section => {
+            section.classList.remove('active');
+        });
 
-    document.getElementById(sectionId).classList.add('active');
+    document
+        .getElementById(sectionId)
+        .classList.add('active');
 
     if (sectionId === 'students') {
         loadStudents();
@@ -31,18 +172,27 @@ function showSection(sectionId) {
 
 async function loadStudents() {
     try {
-        const response = await fetch(`${API_BASE}/students`);
+        const response =
+            await authFetch(`${API_BASE}/students`);
+
+        if (!response) return;
+
         const result = await response.json();
 
-        const tbody = document.getElementById('studentTableBody');
+        const tbody =
+            document.getElementById('studentTableBody');
+
         tbody.innerHTML = '';
 
         if (!result.data || result.data.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5">Chưa có dữ liệu sinh viên</td>
+                    <td colspan="5">
+                        Chưa có dữ liệu sinh viên
+                    </td>
                 </tr>
             `;
+
             return;
         }
 
@@ -69,23 +219,24 @@ async function loadStudents() {
                 </tr>
             `;
         });
-
     } catch (error) {
         console.error(error);
         alert('Không thể tải danh sách sinh viên!');
     }
 }
 
-
 function showStudentForm(student = null) {
-    const form = document.getElementById('studentForm');
+    const form =
+        document.getElementById('studentForm');
 
     const isEdit = student !== null;
 
     form.innerHTML = `
         <div class="form-container">
 
-            <h3>${isEdit ? 'Sửa sinh viên' : 'Thêm sinh viên'}</h3>
+            <h3>
+                ${isEdit ? 'Sửa sinh viên' : 'Thêm sinh viên'}
+            </h3>
 
             <div class="form-group">
                 <label>Mã sinh viên</label>
@@ -114,7 +265,11 @@ function showStudentForm(student = null) {
                 <input
                     type="email"
                     id="studentEmail"
-                    value="${student ? student.Email || '' : ''}"
+                    value="${
+                        student
+                            ? student.Email || ''
+                            : ''
+                    }"
                 >
             </div>
 
@@ -124,7 +279,11 @@ function showStudentForm(student = null) {
                 <input
                     type="text"
                     id="studentLop"
-                    value="${student ? student.Lop || '' : ''}"
+                    value="${
+                        student
+                            ? student.Lop || ''
+                            : ''
+                    }"
                 >
             </div>
 
@@ -152,162 +311,226 @@ function showStudentForm(student = null) {
     `;
 }
 
-
 async function createStudent() {
     const MaSV =
-        document.getElementById('studentMaSV').value.trim();
+        document
+            .getElementById('studentMaSV')
+            .value
+            .trim();
 
     const HoTen =
-        document.getElementById('studentHoTen').value.trim();
+        document
+            .getElementById('studentHoTen')
+            .value
+            .trim();
 
     const Email =
-        document.getElementById('studentEmail').value.trim();
+        document
+            .getElementById('studentEmail')
+            .value
+            .trim();
 
     const Lop =
-        document.getElementById('studentLop').value.trim();
+        document
+            .getElementById('studentLop')
+            .value
+            .trim();
 
     if (!MaSV || !HoTen) {
-        alert('Vui lòng nhập Mã sinh viên và Họ tên!');
+        alert(
+            'Vui lòng nhập Mã sinh viên và Họ tên!'
+        );
         return;
     }
 
     try {
-        const response = await fetch(`${API_BASE}/students`, {
-            method: 'POST',
+        const response =
+            await authFetch(
+                `${API_BASE}/students`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+                    body: JSON.stringify({
+                        MaSV,
+                        HoTen,
+                        Email,
+                        Lop
+                    })
+                }
+            );
 
-            headers: {
-                'Content-Type': 'application/json'
-            },
+        if (!response) return;
 
-            body: JSON.stringify({
-                MaSV,
-                HoTen,
-                Email,
-                Lop
-            })
-        });
-
-        const result = await response.json();
+        const result =
+            await response.json();
 
         if (!response.ok) {
-            alert(result.message || 'Thêm sinh viên thất bại!');
+            alert(
+                result.message ||
+                'Thêm sinh viên thất bại!'
+            );
             return;
         }
 
-        alert('Thêm sinh viên thành công!');
+        alert(
+            'Thêm sinh viên thành công!'
+        );
 
         closeStudentForm();
         loadStudents();
-
     } catch (error) {
         console.error(error);
         alert('Có lỗi xảy ra!');
     }
 }
-
 
 async function editStudent(id) {
     try {
         const response =
-            await fetch(`${API_BASE}/students/${id}`);
+            await authFetch(
+                `${API_BASE}/students/${id}`
+            );
 
-        const result = await response.json();
+        if (!response) return;
+
+        const result =
+            await response.json();
 
         if (!response.ok) {
-            alert(result.message || 'Không tìm thấy sinh viên!');
+            alert(
+                result.message ||
+                'Không tìm thấy sinh viên!'
+            );
             return;
         }
 
         showStudentForm(result.data);
-
     } catch (error) {
         console.error(error);
-        alert('Không thể tải thông tin sinh viên!');
+        alert(
+            'Không thể tải thông tin sinh viên!'
+        );
     }
 }
-
 
 async function updateStudent(id) {
     const HoTen =
-        document.getElementById('studentHoTen').value.trim();
+        document
+            .getElementById('studentHoTen')
+            .value
+            .trim();
 
     const Email =
-        document.getElementById('studentEmail').value.trim();
+        document
+            .getElementById('studentEmail')
+            .value
+            .trim();
 
     const Lop =
-        document.getElementById('studentLop').value.trim();
+        document
+            .getElementById('studentLop')
+            .value
+            .trim();
 
     if (!HoTen) {
-        alert('Vui lòng nhập Họ tên!');
+        alert(
+            'Vui lòng nhập Họ tên!'
+        );
         return;
     }
 
     try {
         const response =
-            await fetch(`${API_BASE}/students/${id}`, {
-                method: 'PUT',
+            await authFetch(
+                `${API_BASE}/students/${id}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+                    body: JSON.stringify({
+                        HoTen,
+                        Email,
+                        Lop
+                    })
+                }
+            );
 
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+        if (!response) return;
 
-                body: JSON.stringify({
-                    HoTen,
-                    Email,
-                    Lop
-                })
-            });
-
-        const result = await response.json();
+        const result =
+            await response.json();
 
         if (!response.ok) {
-            alert(result.message || 'Cập nhật thất bại!');
+            alert(
+                result.message ||
+                'Cập nhật thất bại!'
+            );
             return;
         }
 
-        alert('Cập nhật sinh viên thành công!');
+        alert(
+            'Cập nhật sinh viên thành công!'
+        );
 
         closeStudentForm();
         loadStudents();
-
     } catch (error) {
         console.error(error);
         alert('Có lỗi xảy ra!');
     }
 }
 
-
 async function deleteStudent(id) {
-    if (!confirm(`Bạn có chắc muốn xóa sinh viên ${id}?`)) {
+    if (
+        !confirm(
+            `Bạn có chắc muốn xóa sinh viên ${id}?`
+        )
+    ) {
         return;
     }
 
     try {
         const response =
-            await fetch(`${API_BASE}/students/${id}`, {
-                method: 'DELETE'
-            });
+            await authFetch(
+                `${API_BASE}/students/${id}`,
+                {
+                    method: 'DELETE'
+                }
+            );
 
-        const result = await response.json();
+        if (!response) return;
+
+        const result =
+            await response.json();
 
         if (!response.ok) {
-            alert(result.message || 'Xóa thất bại!');
+            alert(
+                result.message ||
+                'Xóa thất bại!'
+            );
             return;
         }
 
-        alert('Xóa sinh viên thành công!');
+        alert(
+            'Xóa sinh viên thành công!'
+        );
 
         loadStudents();
-
     } catch (error) {
         console.error(error);
         alert('Có lỗi xảy ra!');
     }
 }
 
-
 function closeStudentForm() {
-    document.getElementById('studentForm').innerHTML = '';
+    document.getElementById(
+        'studentForm'
+    ).innerHTML = '';
 }
 
 
@@ -317,18 +540,35 @@ function closeStudentForm() {
 
 async function loadTopics() {
     try {
-        const response = await fetch(`${API_BASE}/topics`);
-        const result = await response.json();
+        const response =
+            await authFetch(
+                `${API_BASE}/topics`
+            );
 
-        const tbody = document.getElementById('topicTableBody');
+        if (!response) return;
+
+        const result =
+            await response.json();
+
+        const tbody =
+            document.getElementById(
+                'topicTableBody'
+            );
+
         tbody.innerHTML = '';
 
-        if (!result.data || result.data.length === 0) {
+        if (
+            !result.data ||
+            result.data.length === 0
+        ) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5">Chưa có dữ liệu đề tài</td>
+                    <td colspan="5">
+                        Chưa có dữ liệu đề tài
+                    </td>
                 </tr>
             `;
+
             return;
         }
 
@@ -340,6 +580,7 @@ async function loadTopics() {
                     <td>${topic.MoTa || ''}</td>
                     <td>${topic.GiangVienHuongDan || ''}</td>
                     <td>
+
                         <button
                             class="btn-edit"
                             onclick="editTopic('${topic.MaDT}')">
@@ -351,27 +592,33 @@ async function loadTopics() {
                             onclick="deleteTopic('${topic.MaDT}')">
                             Xóa
                         </button>
+
                     </td>
                 </tr>
             `;
         });
-
     } catch (error) {
         console.error(error);
-        alert('Không thể tải danh sách đề tài!');
+        alert(
+            'Không thể tải danh sách đề tài!'
+        );
     }
 }
 
-
 function showTopicForm(topic = null) {
-    const form = document.getElementById('topicForm');
+    const form =
+        document.getElementById(
+            'topicForm'
+        );
 
     const isEdit = topic !== null;
 
     form.innerHTML = `
         <div class="form-container">
 
-            <h3>${isEdit ? 'Sửa đề tài' : 'Thêm đề tài'}</h3>
+            <h3>
+                ${isEdit ? 'Sửa đề tài' : 'Thêm đề tài'}
+            </h3>
 
             <div class="form-group">
                 <label>Mã đề tài</label>
@@ -400,7 +647,11 @@ function showTopicForm(topic = null) {
                 <input
                     type="text"
                     id="topicMoTa"
-                    value="${topic ? topic.MoTa || '' : ''}"
+                    value="${
+                        topic
+                            ? topic.MoTa || ''
+                            : ''
+                    }"
                 >
             </div>
 
@@ -442,162 +693,227 @@ function showTopicForm(topic = null) {
     `;
 }
 
-
 async function createTopic() {
     const MaDT =
-        document.getElementById('topicMaDT').value.trim();
+        document
+            .getElementById('topicMaDT')
+            .value
+            .trim();
 
     const TenDT =
-        document.getElementById('topicTenDT').value.trim();
+        document
+            .getElementById('topicTenDT')
+            .value
+            .trim();
 
     const MoTa =
-        document.getElementById('topicMoTa').value.trim();
+        document
+            .getElementById('topicMoTa')
+            .value
+            .trim();
 
     const GiangVienHuongDan =
-        document.getElementById('topicGiangVien').value.trim();
+        document
+            .getElementById('topicGiangVien')
+            .value
+            .trim();
 
     if (!MaDT || !TenDT) {
-        alert('Vui lòng nhập Mã đề tài và Tên đề tài!');
+        alert(
+            'Vui lòng nhập Mã đề tài và Tên đề tài!'
+        );
         return;
     }
 
     try {
-        const response = await fetch(`${API_BASE}/topics`, {
-            method: 'POST',
+        const response =
+            await authFetch(
+                `${API_BASE}/topics`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+                    body: JSON.stringify({
+                        MaDT,
+                        TenDT,
+                        MoTa,
+                        GiangVienHuongDan
+                    })
+                }
+            );
 
-            headers: {
-                'Content-Type': 'application/json'
-            },
+        if (!response) return;
 
-            body: JSON.stringify({
-                MaDT,
-                TenDT,
-                MoTa,
-                GiangVienHuongDan
-            })
-        });
-
-        const result = await response.json();
+        const result =
+            await response.json();
 
         if (!response.ok) {
-            alert(result.message || 'Thêm đề tài thất bại!');
+            alert(
+                result.message ||
+                'Thêm đề tài thất bại!'
+            );
             return;
         }
 
-        alert('Thêm đề tài thành công!');
+        alert(
+            'Thêm đề tài thành công!'
+        );
 
         closeTopicForm();
         loadTopics();
-
     } catch (error) {
         console.error(error);
         alert('Có lỗi xảy ra!');
     }
 }
-
 
 async function editTopic(id) {
     try {
         const response =
-            await fetch(`${API_BASE}/topics/${id}`);
+            await authFetch(
+                `${API_BASE}/topics/${id}`
+            );
 
-        const result = await response.json();
+        if (!response) return;
+
+        const result =
+            await response.json();
 
         if (!response.ok) {
-            alert(result.message || 'Không tìm thấy đề tài!');
+            alert(
+                result.message ||
+                'Không tìm thấy đề tài!'
+            );
             return;
         }
 
         showTopicForm(result.data);
-
     } catch (error) {
         console.error(error);
-        alert('Không thể tải thông tin đề tài!');
+
+        alert(
+            'Không thể tải thông tin đề tài!'
+        );
     }
 }
-
 
 async function updateTopic(id) {
     const TenDT =
-        document.getElementById('topicTenDT').value.trim();
+        document
+            .getElementById('topicTenDT')
+            .value
+            .trim();
 
     const MoTa =
-        document.getElementById('topicMoTa').value.trim();
+        document
+            .getElementById('topicMoTa')
+            .value
+            .trim();
 
     const GiangVienHuongDan =
-        document.getElementById('topicGiangVien').value.trim();
+        document
+            .getElementById('topicGiangVien')
+            .value
+            .trim();
 
     if (!TenDT) {
-        alert('Vui lòng nhập Tên đề tài!');
+        alert(
+            'Vui lòng nhập Tên đề tài!'
+        );
         return;
     }
 
     try {
         const response =
-            await fetch(`${API_BASE}/topics/${id}`, {
-                method: 'PUT',
+            await authFetch(
+                `${API_BASE}/topics/${id}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type':
+                            'application/json'
+                    },
+                    body: JSON.stringify({
+                        TenDT,
+                        MoTa,
+                        GiangVienHuongDan
+                    })
+                }
+            );
 
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+        if (!response) return;
 
-                body: JSON.stringify({
-                    TenDT,
-                    MoTa,
-                    GiangVienHuongDan
-                })
-            });
-
-        const result = await response.json();
+        const result =
+            await response.json();
 
         if (!response.ok) {
-            alert(result.message || 'Cập nhật thất bại!');
+            alert(
+                result.message ||
+                'Cập nhật thất bại!'
+            );
             return;
         }
 
-        alert('Cập nhật đề tài thành công!');
+        alert(
+            'Cập nhật đề tài thành công!'
+        );
 
         closeTopicForm();
         loadTopics();
-
     } catch (error) {
         console.error(error);
         alert('Có lỗi xảy ra!');
     }
 }
 
-
 async function deleteTopic(id) {
-    if (!confirm(`Bạn có chắc muốn xóa đề tài ${id}?`)) {
+    if (
+        !confirm(
+            `Bạn có chắc muốn xóa đề tài ${id}?`
+        )
+    ) {
         return;
     }
 
     try {
         const response =
-            await fetch(`${API_BASE}/topics/${id}`, {
-                method: 'DELETE'
-            });
+            await authFetch(
+                `${API_BASE}/topics/${id}`,
+                {
+                    method: 'DELETE'
+                }
+            );
 
-        const result = await response.json();
+        if (!response) return;
+
+        const result =
+            await response.json();
 
         if (!response.ok) {
-            alert(result.message || 'Xóa thất bại!');
+            alert(
+                result.message ||
+                'Xóa thất bại!'
+            );
             return;
         }
 
-        alert('Xóa đề tài thành công!');
+        alert(
+            'Xóa đề tài thành công!'
+        );
 
         loadTopics();
-
     } catch (error) {
         console.error(error);
         alert('Có lỗi xảy ra!');
     }
 }
 
-
 function closeTopicForm() {
-    document.getElementById('topicForm').innerHTML = '';
+    document.getElementById(
+        'topicForm'
+    ).innerHTML = '';
 }
 
 
@@ -608,16 +924,26 @@ function closeTopicForm() {
 async function loadRegistrations() {
     try {
         const response =
-            await fetch(`${API_BASE}/registrations`);
+            await authFetch(
+                `${API_BASE}/registrations`
+            );
 
-        const result = await response.json();
+        if (!response) return;
+
+        const result =
+            await response.json();
 
         const tbody =
-            document.getElementById('registrationTableBody');
+            document.getElementById(
+                'registrationTableBody'
+            );
 
         tbody.innerHTML = '';
 
-        if (!result.data || result.data.length === 0) {
+        if (
+            !result.data ||
+            result.data.length === 0
+        ) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="9">
@@ -625,6 +951,7 @@ async function loadRegistrations() {
                     </td>
                 </tr>
             `;
+
             return;
         }
 
@@ -638,6 +965,7 @@ async function loadRegistrations() {
 
             tbody.innerHTML += `
                 <tr>
+
                     <td>${registration.MaDK}</td>
 
                     <td>${registration.MaSV}</td>
@@ -648,13 +976,18 @@ async function loadRegistrations() {
 
                     <td>${registration.TenDT || ''}</td>
 
-                    <td>${registration.NgayDangKy || ''}</td>
+                    <td>
+                        ${formatDateDisplay(
+                            registration.NgayDangKy
+                        )}
+                    </td>
 
                     <td>${registration.TrangThai || ''}</td>
 
                     <td>${diem}</td>
 
                     <td>
+
                         <button
                             class="btn-edit"
                             onclick="editRegistration(
@@ -670,34 +1003,45 @@ async function loadRegistrations() {
                             )">
                             Xóa
                         </button>
+
                     </td>
+
                 </tr>
             `;
         });
-
     } catch (error) {
         console.error(error);
-        alert('Không thể tải danh sách đăng ký!');
+        alert(
+            'Không thể tải danh sách đăng ký!'
+        );
     }
 }
 
-
-async function showRegistrationForm(registration = null) {
-
+async function showRegistrationForm(
+    registration = null
+) {
     const form =
-        document.getElementById('registrationForm');
+        document.getElementById(
+            'registrationForm'
+        );
 
     const isEdit = registration !== null;
 
     try {
-
         const [
             studentsResponse,
             topicsResponse
         ] = await Promise.all([
-            fetch(`${API_BASE}/students`),
-            fetch(`${API_BASE}/topics`)
+            authFetch(`${API_BASE}/students`),
+            authFetch(`${API_BASE}/topics`)
         ]);
+
+        if (
+            !studentsResponse ||
+            !topicsResponse
+        ) {
+            return;
+        }
 
         const studentsResult =
             await studentsResponse.json();
@@ -710,7 +1054,6 @@ async function showRegistrationForm(registration = null) {
 
         const topics =
             topicsResult.data || [];
-
 
         const studentOptions =
             students.map(student => `
@@ -726,7 +1069,6 @@ async function showRegistrationForm(registration = null) {
                 </option>
             `).join('');
 
-
         const topicOptions =
             topics.map(topic => `
                 <option
@@ -741,16 +1083,16 @@ async function showRegistrationForm(registration = null) {
                 </option>
             `).join('');
 
-
         form.innerHTML = `
             <div class="form-container">
 
                 <h3>
-                    ${isEdit
-                        ? 'Sửa đăng ký'
-                        : 'Thêm đăng ký'}
+                    ${
+                        isEdit
+                            ? 'Sửa đăng ký'
+                            : 'Thêm đăng ký'
+                    }
                 </h3>
-
 
                 <div class="form-group">
 
@@ -768,7 +1110,6 @@ async function showRegistrationForm(registration = null) {
 
                 </div>
 
-
                 <div class="form-group">
 
                     <label>Đề tài</label>
@@ -784,7 +1125,6 @@ async function showRegistrationForm(registration = null) {
                     </select>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -804,7 +1144,6 @@ async function showRegistrationForm(registration = null) {
 
                 </div>
 
-
                 <div class="form-group">
 
                     <label>Trạng thái</label>
@@ -821,7 +1160,6 @@ async function showRegistrationForm(registration = null) {
                     >
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -845,7 +1183,6 @@ async function showRegistrationForm(registration = null) {
 
                 </div>
 
-
                 <div class="form-buttons">
 
                     <button
@@ -858,12 +1195,13 @@ async function showRegistrationForm(registration = null) {
                                 : 'createRegistration()'
                         }">
 
-                        ${isEdit
-                            ? 'Cập nhật'
-                            : 'Thêm'}
+                        ${
+                            isEdit
+                                ? 'Cập nhật'
+                                : 'Thêm'
+                        }
 
                     </button>
-
 
                     <button
                         class="btn-cancel"
@@ -877,9 +1215,7 @@ async function showRegistrationForm(registration = null) {
 
             </div>
         `;
-
     } catch (error) {
-
         console.error(error);
 
         alert(
@@ -888,44 +1224,50 @@ async function showRegistrationForm(registration = null) {
     }
 }
 
-
 async function createRegistration() {
 
     const MaSV =
-        document.getElementById(
-            'registrationMaSV'
-        ).value;
+        document
+            .getElementById(
+                'registrationMaSV'
+            )
+            .value;
 
     const MaDT =
-        document.getElementById(
-            'registrationMaDT'
-        ).value;
+        document
+            .getElementById(
+                'registrationMaDT'
+            )
+            .value;
 
     const NgayDangKy =
-        document.getElementById(
-            'registrationNgayDangKy'
-        ).value;
+        document
+            .getElementById(
+                'registrationNgayDangKy'
+            )
+            .value;
 
     const TrangThai =
-        document.getElementById(
-            'registrationTrangThai'
-        ).value.trim();
+        document
+            .getElementById(
+                'registrationTrangThai'
+            )
+            .value
+            .trim();
 
     const Diem =
-        document.getElementById(
-            'registrationDiem'
-        ).value;
-
+        document
+            .getElementById(
+                'registrationDiem'
+            )
+            .value;
 
     if (!MaSV || !MaDT) {
-
         alert(
             'Vui lòng chọn sinh viên và đề tài!'
         );
-
         return;
     }
-
 
     if (
         Diem !== '' &&
@@ -934,34 +1276,27 @@ async function createRegistration() {
             Number(Diem) > 10
         )
     ) {
-
         alert(
             'Điểm phải nằm trong khoảng từ 0 đến 10!'
         );
-
         return;
     }
 
-
     try {
-
         const response =
-            await fetch(
+            await authFetch(
                 `${API_BASE}/registrations`,
                 {
                     method: 'POST',
-
                     headers: {
                         'Content-Type':
                             'application/json'
                     },
-
                     body: JSON.stringify({
                         MaSV,
                         MaDT,
                         NgayDangKy,
                         TrangThai,
-
                         Diem:
                             Diem === ''
                                 ? null
@@ -970,34 +1305,26 @@ async function createRegistration() {
                 }
             );
 
+        if (!response) return;
 
         const result =
             await response.json();
 
-
         if (!response.ok) {
-
             alert(
                 result.message ||
                 'Thêm đăng ký thất bại!'
             );
-
             return;
         }
-
 
         alert(
             'Thêm đăng ký thành công!'
         );
 
-
         closeRegistrationForm();
-
         loadRegistrations();
-
-
     } catch (error) {
-
         console.error(error);
 
         alert(
@@ -1006,39 +1333,30 @@ async function createRegistration() {
     }
 }
 
-
 async function editRegistration(id) {
-
     try {
-
         const response =
-            await fetch(
+            await authFetch(
                 `${API_BASE}/registrations/${id}`
             );
 
+        if (!response) return;
 
         const result =
             await response.json();
 
-
         if (!response.ok) {
-
             alert(
                 result.message ||
                 'Không tìm thấy đăng ký!'
             );
-
             return;
         }
-
 
         showRegistrationForm(
             result.data
         );
-
-
     } catch (error) {
-
         console.error(error);
 
         alert(
@@ -1047,44 +1365,50 @@ async function editRegistration(id) {
     }
 }
 
-
 async function updateRegistration(id) {
 
     const MaSV =
-        document.getElementById(
-            'registrationMaSV'
-        ).value;
+        document
+            .getElementById(
+                'registrationMaSV'
+            )
+            .value;
 
     const MaDT =
-        document.getElementById(
-            'registrationMaDT'
-        ).value;
+        document
+            .getElementById(
+                'registrationMaDT'
+            )
+            .value;
 
     const NgayDangKy =
-        document.getElementById(
-            'registrationNgayDangKy'
-        ).value;
+        document
+            .getElementById(
+                'registrationNgayDangKy'
+            )
+            .value;
 
     const TrangThai =
-        document.getElementById(
-            'registrationTrangThai'
-        ).value.trim();
+        document
+            .getElementById(
+                'registrationTrangThai'
+            )
+            .value
+            .trim();
 
     const Diem =
-        document.getElementById(
-            'registrationDiem'
-        ).value;
-
+        document
+            .getElementById(
+                'registrationDiem'
+            )
+            .value;
 
     if (!MaSV || !MaDT) {
-
         alert(
             'Vui lòng chọn sinh viên và đề tài!'
         );
-
         return;
     }
-
 
     if (
         Diem !== '' &&
@@ -1093,38 +1417,27 @@ async function updateRegistration(id) {
             Number(Diem) > 10
         )
     ) {
-
         alert(
             'Điểm phải nằm trong khoảng từ 0 đến 10!'
         );
-
         return;
     }
 
-
     try {
-
         const response =
-            await fetch(
+            await authFetch(
                 `${API_BASE}/registrations/${id}`,
                 {
                     method: 'PUT',
-
                     headers: {
                         'Content-Type':
                             'application/json'
                     },
-
                     body: JSON.stringify({
-
                         MaSV,
-
                         MaDT,
-
                         NgayDangKy,
-
                         TrangThai,
-
                         Diem:
                             Diem === ''
                                 ? null
@@ -1133,34 +1446,26 @@ async function updateRegistration(id) {
                 }
             );
 
+        if (!response) return;
 
         const result =
             await response.json();
 
-
         if (!response.ok) {
-
             alert(
                 result.message ||
                 'Cập nhật thất bại!'
             );
-
             return;
         }
-
 
         alert(
             'Cập nhật đăng ký thành công!'
         );
 
-
         closeRegistrationForm();
-
         loadRegistrations();
-
-
     } catch (error) {
-
         console.error(error);
 
         alert(
@@ -1168,7 +1473,6 @@ async function updateRegistration(id) {
         );
     }
 }
-
 
 async function deleteRegistration(id) {
 
@@ -1180,43 +1484,34 @@ async function deleteRegistration(id) {
         return;
     }
 
-
     try {
-
         const response =
-            await fetch(
+            await authFetch(
                 `${API_BASE}/registrations/${id}`,
                 {
                     method: 'DELETE'
                 }
             );
 
+        if (!response) return;
 
         const result =
             await response.json();
 
-
         if (!response.ok) {
-
             alert(
                 result.message ||
                 'Xóa thất bại!'
             );
-
             return;
         }
-
 
         alert(
             'Xóa đăng ký thành công!'
         );
 
-
         loadRegistrations();
-
-
     } catch (error) {
-
         console.error(error);
 
         alert(
@@ -1225,13 +1520,10 @@ async function deleteRegistration(id) {
     }
 }
 
-
 function closeRegistrationForm() {
-
     document.getElementById(
         'registrationForm'
     ).innerHTML = '';
-
 }
 
 
@@ -1240,10 +1532,29 @@ function closeRegistrationForm() {
 // =========================
 
 function formatDate(date) {
-
     if (!date) {
         return '';
     }
 
     return String(date).substring(0, 10);
+}
+
+// Hiển thị ngày theo định dạng Việt Nam: dd/mm/yyyy
+function formatDateDisplay(date) {
+    if (!date) {
+        return '';
+    }
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+        return '';
+    }
+
+    return parsedDate.toLocaleDateString(
+        'vi-VN',
+        {
+            timeZone: 'Asia/Ho_Chi_Minh'
+        }
+    );
 }

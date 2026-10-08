@@ -5,6 +5,8 @@ const path = require('path');
 const studentRoutes = require('./routes/student.routes');
 const topicRoutes = require('./routes/topic.routes');
 const registrationRoutes = require('./routes/registration.routes');
+const authRoutes = require('./routes/auth.routes');
+const authenticateToken = require('./middlewares/auth.middleware');
 
 const app = express();
 
@@ -15,14 +17,21 @@ app.use(express.json());
 // Frontend
 app.use(express.static(path.join(__dirname, '../public')));
 
+// API Tài khoản
+// Không cần đăng nhập để đăng ký và đăng nhập
+app.use('/api/auth', authRoutes);
+
 // API Sinh viên
-app.use('/api/students', studentRoutes);
+// Yêu cầu đăng nhập
+app.use('/api/students', authenticateToken, studentRoutes);
 
 // API Đề tài
-app.use('/api/topics', topicRoutes);
+// Yêu cầu đăng nhập
+app.use('/api/topics', authenticateToken, topicRoutes);
 
 // API Đăng ký
-app.use('/api/registrations', registrationRoutes);
+// Yêu cầu đăng nhập
+app.use('/api/registrations', authenticateToken, registrationRoutes);
 
 // Route kiểm tra server
 app.get('/', (req, res) => {

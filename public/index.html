@@ -15,13 +15,62 @@
     <!-- HEADER -->
     <header>
         <div class="header-content">
+
             <h1>HỆ THỐNG QUẢN LÝ ĐỒ ÁN TỐT NGHIỆP</h1>
+
+            <!-- KHU VỰC TÀI KHOẢN -->
+            <div id="authArea">
+
+                <!-- FORM ĐĂNG NHẬP -->
+                <div id="loginBox">
+
+                    <input
+                        type="text"
+                        id="loginUsername"
+                        placeholder="Tên đăng nhập"
+                    >
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Mật khẩu"
+                    >
+
+                    <button
+                        type="button"
+                        onclick="login()">
+
+                        Đăng nhập
+
+                    </button>
+
+                </div>
+
+
+                <!-- THÔNG TIN NGƯỜI DÙNG -->
+                <div id="userBox" style="display: none;">
+
+                    <span id="welcomeUser"></span>
+
+                    <button
+                        type="button"
+                        onclick="logout()">
+
+                        Đăng xuất
+
+                    </button>
+
+                </div>
+
+            </div>
+
         </div>
     </header>
 
 
     <!-- MENU -->
     <nav>
+
         <button onclick="showSection('home')">
             Trang chủ
         </button>
@@ -37,6 +86,7 @@
         <button onclick="showSection('registrations')">
             Đăng ký
         </button>
+
     </nav>
 
 
@@ -223,25 +273,15 @@
 
                     <tr>
 
-                        <th>
-                            Mã SV
-                        </th>
+                        <th>Mã SV</th>
 
-                        <th>
-                            Họ tên
-                        </th>
+                        <th>Họ tên</th>
 
-                        <th>
-                            Email
-                        </th>
+                        <th>Email</th>
 
-                        <th>
-                            Lớp
-                        </th>
+                        <th>Lớp</th>
 
-                        <th>
-                            Thao tác
-                        </th>
+                        <th>Thao tác</th>
 
                     </tr>
 
@@ -281,25 +321,15 @@
 
                     <tr>
 
-                        <th>
-                            Mã đề tài
-                        </th>
+                        <th>Mã đề tài</th>
 
-                        <th>
-                            Tên đề tài
-                        </th>
+                        <th>Tên đề tài</th>
 
-                        <th>
-                            Mô tả
-                        </th>
+                        <th>Mô tả</th>
 
-                        <th>
-                            Giảng viên hướng dẫn
-                        </th>
+                        <th>Giảng viên hướng dẫn</th>
 
-                        <th>
-                            Thao tác
-                        </th>
+                        <th>Thao tác</th>
 
                     </tr>
 
@@ -322,7 +352,6 @@
                 Quản lý đăng ký đề tài
             </h2>
 
-
             <button
                 class="add-btn"
                 onclick="showRegistrationForm()">
@@ -330,7 +359,6 @@
                 + Thêm đăng ký
 
             </button>
-
 
             <div id="registrationForm"></div>
 
@@ -341,42 +369,23 @@
 
                     <tr>
 
-                        <th>
-                            Mã đăng ký
-                        </th>
+                        <th>Mã đăng ký</th>
 
-                        <th>
-                            Mã SV
-                        </th>
+                        <th>Mã SV</th>
 
-                        <th>
-                            Họ tên
-                        </th>
+                        <th>Họ tên</th>
 
-                        <th>
-                            Mã đề tài
-                        </th>
+                        <th>Mã đề tài</th>
 
-                        <th>
-                            Tên đề tài
-                        </th>
+                        <th>Tên đề tài</th>
 
-                        <th>
-                            Ngày đăng ký
-                        </th>
+                        <th>Ngày đăng ký</th>
 
-                        <th>
-                            Trạng thái
-                        </th>
+                        <th>Trạng thái</th>
 
-                        <!-- THÊM CỘT ĐIỂM -->
-                        <th>
-                            Điểm
-                        </th>
+                        <th>Điểm</th>
 
-                        <th>
-                            Thao tác
-                        </th>
+                        <th>Thao tác</th>
 
                     </tr>
 
