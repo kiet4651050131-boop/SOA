@@ -127,14 +127,14 @@ async function login(req, res) {
             }
         });
 
-    } catch (error) {
-        console.error('login error:', error.message);
+} catch (error) {
+    console.error('login error:', error);
 
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi khi đăng nhập'
-        });
-    }
+    res.status(500).json({
+        success: false,
+        message: 'Lỗi khi đăng nhập'
+    });
+}
 }
 
 
