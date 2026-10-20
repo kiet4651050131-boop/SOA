@@ -1,0 +1,82 @@
+# Chạy:  docker compose up --build      (cần file .env có JWT_SECRET)
+# Mỗi thành phần là một container riêng, tự khởi động lại khi lỗi (restart) và có healthcheck.
+x-svc: &svc
+  build: .
+  env_file: .env
+  restart: unless-stopped
+  depends_on:
+    mysql: { condition: service_healthy }
+    registry: { condition: service_healthy }
+  environment: &env
+    DB_HOST: mysql
+    REGISTRY_URL: http://registry:3500
+    EVENT_BUS_URL: http://event-bus:3600
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes: [dbdata:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 20
+
+  registry:
+    build: .
+    env_file: .env
+    restart: unless-stopped
+    command: ["node", "registry/server.js"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3500/health"]
+      interval: 5s
+      retries: 10
+
+  event-bus:
+    <<: *svc
+    command: ["node", "event-bus/server.js"]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:3600/health"], interval: 10s, retries: 6 }
+    volumes: [busdata:/app/data]
+
+  auth-service:
+    <<: *svc
+    command: ["node", "services/auth-service/index.js"]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"], interval: 10s, retries: 6 }
+    environment: { <<: *env, SERVICE_HOST: auth-service }
+
+  student-service:
+    <<: *svc
+    command: ["node", "services/student-service/index.js"]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"], interval: 10s, retries: 6 }
+    environment: { <<: *env, SERVICE_HOST: student-service }
+
+  topic-service:
+    <<: *svc
+    command: ["node", "services/topic-service/index.js"]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:3003/health"], interval: 10s, retries: 6 }
+    environment: { <<: *env, SERVICE_HOST: topic-service }
+
+  registration-service:
+    <<: *svc
+    command: ["node", "services/registration-service/index.js"]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:3004/health"], interval: 10s, retries: 6 }
+    environment: { <<: *env, SERVICE_HOST: registration-service }
+
+  notification-service:
+    <<: *svc
+    command: ["node", "services/notification-service/index.js"]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:3005/health"], interval: 10s, retries: 6 }
+    environment: { <<: *env, SERVICE_HOST: notification-service }
+
+  gateway:
+    <<: *svc
+    command: ["node", "gateway/server.js"]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"], interval: 10s, retries: 6 }
+    ports: ["3000:3000"]
+    environment: { <<: *env, SERVICE_HOST: gateway }
+
+volumes:
+  dbdata:
+  busdata:

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quản lý đồ án tốt nghiệp</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-content">
+
+            <h1>HỆ THỐNG QUẢN LÝ ĐỒ ÁN TỐT NGHIỆP</h1>
+
+            <!-- KHU VỰC TÀI KHOẢN -->
+            <div id="authArea">
+
+                <!-- FORM ĐĂNG NHẬP -->
+                <div id="loginBox">
+
+                    <input
+                        type="text"
+                        id="loginUsername"
+                        placeholder="Tên đăng nhập"
+                    >
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Mật khẩu"
+                    >
+
+                    <button
+                        type="button"
+                        onclick="login()">
+
+                        Đăng nhập
+
+                    </button>
+
+                </div>
+
+
+                <!-- THÔNG TIN NGƯỜI DÙNG -->
+                <div id="userBox" style="display: none;">
+
+                    <span id="welcomeUser"></span>
+
+                    <button
+                        type="button"
+                        onclick="logout()">
+
+                        Đăng xuất
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- MENU -->
+    <nav>
+
+        <button onclick="showSection('home')">
+            Trang chủ
+        </button>
+
+        <button onclick="showSection('students')">
+            Sinh viên
+        </button>
+
+        <button onclick="showSection('topics')">
+            Đề tài
+        </button>
+
+        <button onclick="showSection('registrations')">
+            Đăng ký
+        </button>
+
+        <button onclick="showSection('notifications')">
+            Thông báo <span id="notifBadge" class="badge" style="display:none"></span>
+        </button>
+
+        <button id="navSystem" style="display:none" onclick="showSection('system')">
+            Hệ thống SOA
+        </button>
+
+    </nav>
+
+
+    <!-- MAIN -->
+    <main>
+
+        <!-- ==================== TRANG CHỦ ==================== -->
+
+        <section id="home" class="section active">
+
+            <div class="home-banner">
+
+                <div class="banner-content">
+
+                    <span class="banner-label">
+                        CỔNG THÔNG TIN
+                    </span>
+
+                    <h2>
+                        Quản lý đồ án tốt nghiệp
+                    </h2>
+
+                    <p>
+                        Cổng thông tin dành cho giảng viên quản lý đăng ký và
+                        điểm đồ án tốt nghiệp của sinh viên niên khóa
+                        <strong>2022 – 2026</strong>.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- 3 CHỨC NĂNG -->
+
+            <div class="home-section">
+
+                <h2 class="home-title">
+                    Chức năng chính
+                </h2>
+
+                <div class="feature-grid">
+
+
+                    <!-- SINH VIÊN -->
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+                            👨‍🎓
+                        </div>
+
+                        <h3>
+                            Quản lý sinh viên
+                        </h3>
+
+                        <p>
+                            Quản lý thông tin sinh viên bao gồm mã sinh viên,
+                            họ tên, email và lớp.
+                        </p>
+
+                        <button
+                            class="feature-btn"
+                            onclick="showSection('students')">
+
+                            Xem sinh viên
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- ĐỀ TÀI -->
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+                            📚
+                        </div>
+
+                        <h3>
+                            Quản lý đề tài
+                        </h3>
+
+                        <p>
+                            Quản lý danh sách đề tài tốt nghiệp và
+                            thông tin giảng viên hướng dẫn.
+                        </p>
+
+                        <button
+                            class="feature-btn"
+                            onclick="showSection('topics')">
+
+                            Xem đề tài
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- ĐĂNG KÝ -->
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+                            📝
+                        </div>
+
+                        <h3>
+                            Đăng ký đề tài
+                        </h3>
+
+                        <p>
+                            Quản lý việc đăng ký đề tài của sinh viên,
+                            theo dõi trạng thái và điểm đồ án.
+                        </p>
+
+                        <button
+                            class="feature-btn"
+                            onclick="showSection('registrations')">
+
+                            Xem đăng ký
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- LƯU Ý -->
+
+            <div class="notice-box">
+
+                <div class="notice-title">
+                    📌 Lưu ý
+                </div>
+
+                <ul>
+
+                    <li>
+                        Thông tin sinh viên và đăng ký do cấp dưới gửi lên; giảng viên kiểm tra, nhập và xác nhận vào hệ thống.
+                    </li>
+
+                    <li>
+                        Mỗi sinh viên chỉ được đăng ký 01 đề tài (đăng ký đã hủy/bị từ chối thì được đăng ký lại).
+                    </li>
+
+                    <li>
+                        Theo dõi mục Thông báo để biết các thay đổi về đăng ký và điểm.
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================== SINH VIÊN ==================== -->
+
+        <section id="students" class="section">
+
+            <h2>
+                Quản lý sinh viên
+            </h2>
+
+            <button
+                class="add-btn"
+                onclick="showStudentForm()">
+
+                + Thêm sinh viên
+
+            </button>
+
+            <div id="studentForm"></div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Mã SV</th>
+
+                        <th>Họ tên</th>
+
+                        <th>Email</th>
+
+                        <th>Lớp</th>
+
+                        <th>Thao tác</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="studentTableBody">
+                </tbody>
+
+            </table>
+
+        </section>
+
+
+        <!-- ==================== ĐỀ TÀI ==================== -->
+
+        <section id="topics" class="section">
+
+            <h2>
+                Quản lý đề tài
+            </h2>
+
+            <button
+                class="add-btn"
+                onclick="showTopicForm()">
+
+                + Thêm đề tài
+
+            </button>
+
+            <div id="topicForm"></div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Mã đề tài</th>
+
+                        <th>Tên đề tài</th>
+
+                        <th>Mô tả</th>
+
+                        <th>Giảng viên hướng dẫn</th>
+
+                        <th>Thao tác</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="topicTableBody">
+                </tbody>
+
+            </table>
+
+        </section>
+
+
+        <!-- ==================== ĐĂNG KÝ ==================== -->
+
+        <section id="registrations" class="section">
+
+            <h2>
+                Quản lý đăng ký đề tài
+            </h2>
+
+            <button
+                class="add-btn"
+                onclick="showRegistrationForm()">
+
+                + Thêm đăng ký
+
+            </button>
+
+            <div id="registrationForm"></div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Mã đăng ký</th>
+
+                        <th>Mã SV</th>
+
+                        <th>Họ tên</th>
+
+                        <th>Mã đề tài</th>
+
+                        <th>Tên đề tài</th>
+
+                        <th>Ngày đăng ký</th>
+
+                        <th>Trạng thái</th>
+
+                        <th>Điểm</th>
+
+                        <th>Thao tác</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="registrationTableBody">
+                </tbody>
+
+            </table>
+
+        </section>
+
+
+        <!-- ==================== THÔNG BÁO ==================== -->
+
+        <section id="notifications" class="section">
+            <h2>Thông báo</h2>
+            <p class="soa-note">Thông báo được tạo bất đồng bộ: các dịch vụ phát sự kiện lên Event Bus, notification-service nhận và lưu lại.</p>
+            <div id="notificationList"></div>
+        </section>
+
+
+        <!-- ==================== HỆ THỐNG SOA ==================== -->
+
+        <section id="system" class="section">
+            <h2>Trạng thái hệ thống SOA</h2>
+            <p class="soa-note">Dữ liệu lấy trực tiếp từ Service Registry và Event Bus, tự làm mới mỗi 5 giây. Tài liệu API: <a href="/api-docs" target="_blank">/api-docs</a></p>
+            <div id="systemBox"></div>
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <p>
+            SOA Graduation Project © 2026
+        </p>
+
+    </footer>
+
+
+    <script src="js/app.js"></script>
+    <script src="js/soa-extra.js"></script>
+
+</body>
+
+</html>

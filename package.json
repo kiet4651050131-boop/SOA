@@ -1,0 +1,29 @@
+{
+  "name": "soa-graduation-project",
+  "version": "2.0.0",
+  "description": "Hệ thống quản lý đồ án tốt nghiệp theo kiến trúc hướng dịch vụ (SOA)",
+  "main": "scripts/run-all.js",
+  "scripts": {
+    "start": "node scripts/run-all.js",
+    "test": "node --test tests/infra.test.js",
+    "start:registry": "node registry/server.js",
+    "start:event-bus": "node event-bus/server.js",
+    "start:gateway": "node gateway/server.js",
+    "start:auth": "node services/auth-service/index.js",
+    "start:student": "node services/student-service/index.js",
+    "start:topic": "node services/topic-service/index.js",
+    "start:registration": "node services/registration-service/index.js",
+    "start:notification": "node services/notification-service/index.js",
+    "test:e2e": "node --test tests/e2e.test.js",
+    "seed": "node scripts/seed.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^5.2.1",
+    "mysql2": "^3.24.4"
+  }
+}

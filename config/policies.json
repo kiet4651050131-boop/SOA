@@ -1,0 +1,174 @@
+{
+  "routes": [
+    {
+      "prefix": "/api/auth/login",
+      "service": "auth-service",
+      "rules": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "auth": false,
+          "rateLimit": {
+            "windowMs": 60000,
+            "max": 10
+          }
+        }
+      ]
+    },
+    {
+      "prefix": "/api/auth/register",
+      "service": "auth-service",
+      "rules": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "rateLimit": {
+            "windowMs": 60000,
+            "max": 5
+          },
+          "roles": [
+            "giangvien"
+          ]
+        }
+      ]
+    },
+    {
+      "prefix": "/api/auth/users",
+      "service": "auth-service",
+      "rules": [
+        {
+          "methods": [
+            "*"
+          ],
+          "roles": [
+            "giangvien"
+          ]
+        }
+      ]
+    },
+    {
+      "prefix": "/api/auth",
+      "service": "auth-service",
+      "rules": [
+        {
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "roles": [
+            "*"
+          ]
+        }
+      ]
+    },
+    {
+      "prefix": "/api/students",
+      "service": "student-service",
+      "rules": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "roles": [
+            "giangvien"
+          ]
+        },
+        {
+          "methods": [
+            "POST",
+            "PUT",
+            "DELETE"
+          ],
+          "roles": [
+            "giangvien"
+          ]
+        }
+      ]
+    },
+    {
+      "prefix": "/api/topics",
+      "service": "topic-service",
+      "rules": [
+        {
+          "methods": [
+            "GET"
+          ],
+          "roles": [
+            "giangvien"
+          ]
+        },
+        {
+          "methods": [
+            "POST",
+            "PUT",
+            "DELETE"
+          ],
+          "roles": [
+            "giangvien"
+          ]
+        }
+      ]
+    },
+    {
+      "prefix": "/api/registrations",
+      "service": "registration-service",
+      "rules": [
+        {
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "roles": [
+            "giangvien"
+          ]
+        },
+        {
+          "methods": [
+            "PUT"
+          ],
+          "roles": [
+            "giangvien"
+          ]
+        },
+        {
+          "methods": [
+            "DELETE"
+          ],
+          "roles": [
+            "giangvien"
+          ]
+        }
+      ]
+    },
+    {
+      "prefix": "/api/notifications",
+      "service": "notification-service",
+      "rules": [
+        {
+          "methods": [
+            "GET",
+            "PUT"
+          ],
+          "roles": [
+            "giangvien"
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": {
+    "bodyBytes": 1048576,
+    "global": {
+      "windowMs": 60000,
+      "max": 600
+    }
+  },
+  "cors": {
+    "origins": [
+      "*"
+    ]
+  },
+  "version": 1
+}
